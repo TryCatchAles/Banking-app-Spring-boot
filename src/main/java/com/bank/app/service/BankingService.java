@@ -23,16 +23,16 @@ public class BankingService {
 
     public Account createAccount(String email, String password) {
         if (accountRepository.findByEmail(email).isPresent()) {
-            throw new RuntimeException("Email already exists");
+            throw new RuntimeException("Error: Email already exists");
         }
         return accountRepository.save(new Account(email, password));
     }
 
     public Account login(String email, String password) {
         Account account = accountRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Account not found"));
+                .orElseThrow(() -> new RuntimeException("Error: Account with this email does not exist"));
         if (!account.getPassword().equals(password)) {
-            throw new RuntimeException("Invalid password");
+            throw new RuntimeException("Error: Invalid password");
         }
         return account;
     }
@@ -40,12 +40,12 @@ public class BankingService {
     @Transactional
     public void transfer(Long senderId, String receiverEmail, BigDecimal amount) {
         Account sender = accountRepository.findById(senderId)
-                .orElseThrow(() -> new RuntimeException("Sender not found"));
+                .orElseThrow(() -> new RuntimeException("Error: Sender account not found"));
         Account receiver = accountRepository.findByEmail(receiverEmail)
-                .orElseThrow(() -> new RuntimeException("Receiver not found"));
+                .orElseThrow(() -> new RuntimeException("Error: Receiver email does not exist"));
 
         if (sender.getBalance().compareTo(amount) < 0) {
-            throw new RuntimeException("Insufficient funds");
+            throw new RuntimeException("Error: Insufficient funds for this transfer");
         }
 
         sender.setBalance(sender.getBalance().subtract(amount));
@@ -62,6 +62,6 @@ public class BankingService {
     }
     
     public Account getAccount(Long id) {
-        return accountRepository.findById(id).orElseThrow(() -> new RuntimeException("Account not found"));
+        return accountRepository.findById(id).orElseThrow(() -> new RuntimeException("Error: Account not found"));
     }
 }
