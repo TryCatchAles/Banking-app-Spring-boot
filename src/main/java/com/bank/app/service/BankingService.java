@@ -43,7 +43,9 @@ public class BankingService {
                 .orElseThrow(() -> new RuntimeException("Error: Sender account not found"));
         Account receiver = accountRepository.findByEmail(receiverEmail)
                 .orElseThrow(() -> new RuntimeException("Error: Receiver email does not exist"));
-
+        if (amount.compareTo(BigDecimal.ZERO) <= 0){
+            throw new RuntimeException("Error: Invalid amount");
+        }
         if (sender.getBalance().compareTo(amount) < 0) {
             throw new RuntimeException("Error: Insufficient funds for this transfer");
         }
