@@ -43,6 +43,9 @@ public class BankingService {
                 .orElseThrow(() -> new RuntimeException("Error: Sender account not found"));
         Account receiver = accountRepository.findByEmail(receiverEmail)
                 .orElseThrow(() -> new RuntimeException("Error: Receiver email does not exist"));
+        if (sender.getId().equals(receiver.getId())){
+            throw new RuntimeException("Error: Sender and receiver cannot be the same");
+        }
         if (amount.compareTo(BigDecimal.ZERO) <= 0){
             throw new RuntimeException("Error: Invalid amount");
         }
